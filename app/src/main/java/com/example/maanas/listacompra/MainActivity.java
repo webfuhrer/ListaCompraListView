@@ -37,7 +37,8 @@ Spinner spn_comercio;
         }
         else //Están rellenos todos los campos
         {
-            Producto p=new Producto(nombre, comercio, Integer.parseInt(cantidad));
+            //Pongo el 0 porque realmente no se usa en la inserción ya que el id lo crea SQLite
+            Producto p=new Producto(nombre, comercio, Integer.parseInt(cantidad), 0);
             AccesoBD db=new AccesoBD(this, 1);
             db.grabar(p);
         }

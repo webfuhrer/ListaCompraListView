@@ -6,11 +6,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
@@ -20,9 +22,19 @@ public class MiAdaptador extends BaseAdapter  {
     ArrayList<Producto> lista_productos;
     Context contexto;
 
+    public void setLista_productos(ArrayList<Producto> lista_productos) {
+        //Pongo este setter parq poder desde ActivityListar darle la nueva lista de productos.
+        this.lista_productos = lista_productos;
+    }
+
+    ArrayList<Long> lista_productos_chequeados=new ArrayList<>();
     public MiAdaptador(ArrayList<Producto> lista_productos, Context contexto) {
         this.lista_productos = lista_productos;
         this.contexto = contexto;
+    }
+
+    public ArrayList<Long> getLista_productos_chequeados() {
+        return lista_productos_chequeados;
     }
 
     @Override
@@ -47,12 +59,26 @@ public class MiAdaptador extends BaseAdapter  {
         TextView tv_producto=v.findViewById(R.id.tv_producto);
         TextView tv_comercio=v.findViewById(R.id.tv_comercio);
         TextView tv_cantidad=v.findViewById(R.id.tv_cantidad);
-        Button btn_borrar=v.findViewById(R.id.btn_borrar);
+        final CheckBox chk_borrar=v.findViewById(R.id.chk_borrar);
         final Producto p=lista_productos.get(position);
         tv_producto.setText(p.getNombre());
         tv_cantidad.setText(String.valueOf(p.getCantidad()));
         tv_comercio.setText(p.getComercio());
-        btn_borrar.setOnClickListener(new View.OnClickListener() {
+        chk_borrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               boolean chequeado= chk_borrar.isChecked();
+                //Log.d("checkbox",String.valueOf(chequeado) + p.getId());
+                if (chequeado==true) {
+                    annadirProducto(p.getId());
+                }
+                else
+                {
+                    sacarProducto(p.getId());
+                }
+            }
+        });
+        /*btn_borrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -74,7 +100,16 @@ public class MiAdaptador extends BaseAdapter  {
                 AlertDialog alerta=builder.create();
                 alerta.show();
             }
-        });
+        });*/
         return v;
     }
+
+    private void sacarProducto(long id) {
+        lista_productos_chequeados.remove(id);
+    }
+
+    private void annadirProducto(long id) {
+        lista_productos_chequeados.add(id);
+    }
+
 }

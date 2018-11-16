@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class AccesoBD extends SQLiteOpenHelper {
     public AccesoBD(Context context, int version) {
-        super(context,"mi_bd", null, version);
+        super(context,"mi_bd2", null, version);
 
     }
 
@@ -18,7 +18,7 @@ public class AccesoBD extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query_crea_tabla="CREATE TABLE lista_compra(producto TEXT, cantidad INT, comercio TEXT);";
+        String query_crea_tabla="CREATE TABLE lista_compra(id INTEGER PRIMARY KEY, producto TEXT, cantidad INT, comercio TEXT);";
         db.execSQL(query_crea_tabla);
     }
 
@@ -28,16 +28,20 @@ public class AccesoBD extends SQLiteOpenHelper {
     }
     public void grabar(Producto p)
     {
-        String query_insert="INSERT INTO lista_compra VALUES(?, ?, ?);";
+        String query_insert="INSERT INTO lista_compra(producto, cantidad, comercio) VALUES(?, ?, ?);";
         SQLiteDatabase db=getWritableDatabase();
         Object[] arguumentos={p.getNombre(), p.getCantidad(), p.getComercio()};
         db.execSQL(query_insert,arguumentos);
     }
-    public  void borrar(Producto p) {
-        String sql_borrar="DELETE FROM lista_compra WHERE producto=? AND cantidad=? AND comercio=?";
-        SQLiteDatabase sq=getWritableDatabase();
-        Object[] argumentos={p.getNombre(), p.getCantidad(), p.getComercio()};
-        sq.execSQL(sql_borrar, argumentos);
+    public  void borrar(ArrayList<Long> lista_ids) {
+       // DELETE FROM lista_compra WHERE id IN (1, 2, 3, 4);
+        for (Long id:lista_ids) {
+            SQLiteDatabase sq=getWritableDatabase();
+            String sql_borrar="DELETE FROM lista_compra"+" WHERE id="+id;
+            sq.execSQL(sql_borrar);
+
+        }
+
 
     }
 
@@ -48,10 +52,14 @@ public class AccesoBD extends SQLiteOpenHelper {
         Cursor c=db.rawQuery(query_seleccion, null);
         while(c.moveToNext())
         {
-            int cantidad=c.getInt(1);
-            String producto=c.getString(0);
-            String comercio=c.getString(2);
-            Producto p=new Producto(producto, comercio, cantidad);
+
+
+            long id=c.getLong(0);//id de producto
+            Log.d("mi_id", String.valueOf(id));
+            int cantidad=c.getInt(2);
+            String producto=c.getString(1);
+            String comercio=c.getString(3);
+            Producto p=new Producto(producto, comercio, cantidad, id);
             lista_productos.add(p);
         }
     return lista_productos;
