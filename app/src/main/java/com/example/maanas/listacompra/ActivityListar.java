@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -17,6 +18,7 @@ public class ActivityListar extends AppCompatActivity {
     //Spinner spn_lista;
     ListView lv_vista;
     Button btn_borrar;
+    Spinner spn_filtro;
     MiAdaptador adaptador=null;
     Context contexto;
     @Override
@@ -39,9 +41,26 @@ public class ActivityListar extends AppCompatActivity {
     }
 
     private void cargarVistas() {
+        spn_filtro=findViewById(R.id.spn_filtro);
         lv_vista=findViewById(R.id.lv_lista);
         btn_borrar=findViewById(R.id.btn_borrar);
         contexto=this;
+        spn_filtro.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+               String comercio=(String) spn_filtro.getSelectedItem();
+                AccesoBD bd=new AccesoBD(contexto, 1);
+
+                ArrayList<Producto> lista_productos=bd.listarPorComercio(comercio);
+                adaptador.setLista_productos(lista_productos);
+                adaptador.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         btn_borrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

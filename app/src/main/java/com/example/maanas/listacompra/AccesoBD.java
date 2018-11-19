@@ -64,4 +64,26 @@ public class AccesoBD extends SQLiteOpenHelper {
         }
     return lista_productos;
     }
+
+    public ArrayList<Producto> listarPorComercio(String comercio) {
+        ArrayList<Producto> lista_productos=new ArrayList<>();
+        String query_seleccion="SELECT * FROM lista_compra WHERE comercio=?";
+        SQLiteDatabase db=getReadableDatabase();
+        String[] argumentos={comercio};
+        Cursor c=db.rawQuery(query_seleccion, argumentos);
+        while(c.moveToNext())
+        {
+
+
+            long id=c.getLong(0);//id de producto
+            Log.d("mi_id", String.valueOf(id));
+            int cantidad=c.getInt(2);
+            String producto=c.getString(1);
+            //String comercio=c.getString(3);
+            Producto p=new Producto(producto, comercio, cantidad, id);
+            lista_productos.add(p);
+        }
+        return lista_productos;
+    }
+
 }
